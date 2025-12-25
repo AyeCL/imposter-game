@@ -7,10 +7,16 @@
   --surface-strong: #ffe0ee;
   --accent: #ff7eb6;
   --accent-strong: #ff4f9a;
-  --font-display: "Avenir Next", "Avenir", "Trebuchet MS", "Verdana",
-    "Segoe UI", sans-serif;
-  --font-body: "Nunito", "Avenir Next", "Avenir", "Trebuchet MS", "Verdana",
-    "Segoe UI", sans-serif;
+  --nepal-marigold: #f6b65f;
+  --nepal-teal: #2f8f86;
+  --nepal-blue: #3a66ad;
+  --nepal-red: #cc3558;
+  --nepal-ink: #3b2130;
+  --font-display: "Kohinoor Devanagari", "Noto Serif Devanagari", "Mukta",
+    "Avenir Next", "Avenir", "Trebuchet MS", "Verdana", "Segoe UI", serif;
+  --font-body: "Mukta", "Noto Sans Devanagari", "Kohinoor Devanagari",
+    "Nunito", "Avenir Next", "Avenir", "Trebuchet MS", "Verdana", "Segoe UI",
+    sans-serif;
 }
 
 @theme inline {
@@ -24,4 +30,56 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), "Segoe UI", sans-serif;
+}
+
+.nepal-sky {
+  background-color: var(--background);
+  background-image: radial-gradient(
+      circle at top,
+      rgba(255, 205, 227, 0.96),
+      rgba(255, 236, 246, 0.7) 42%,
+      rgba(255, 250, 252, 0.98) 75%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(246, 182, 95, 0.18),
+      rgba(47, 143, 134, 0.12)
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(204, 53, 88, 0.05) 0 10px,
+      transparent 10px 24px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(58, 102, 173, 0.05) 0 10px,
+      transparent 10px 26px
+    );
+}
+
+.nepal-dhaka {
+  background-image: repeating-linear-gradient(
+      45deg,
+      rgba(255, 176, 210, 0.18) 0 6px,
+      transparent 6px 16px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(246, 182, 95, 0.14) 0 6px,
+      transparent 6px 16px
+    );
+  background-size: 26px 26px;
+}
+
+.nepal-prayer-flags {
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAxODAgMjQiPjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiLz48cG9seWdvbiBwb2ludHM9IjAsMCAyMCwwIDEwLDE4IiBmaWxsPSIjZjU5ZmMyIi8+PHBvbHlnb24gcG9pbnRzPSIyMCwwIDQwLDAgMzAsMTgiIGZpbGw9IiNmNmMwNmEiLz48cG9seWdvbiBwb2ludHM9IjQwLDAgNjAsMCA1MCwxOCIgZmlsbD0iIzNmYTU5YiIvPjxwb2x5Z29uIHBvaW50cz0iNjAsMCA4MCwwIDcwLDE4IiBmaWxsPSIjZTc3YWE5Ii8+PHBvbHlnb24gcG9pbnRzPSI4MCwwIDEwMCwwIDkwLDE4IiBmaWxsPSIjM2E2NmFkIi8+PHBvbHlnb24gcG9pbnRzPSIxMDAsMCAxMjAsMCAxMTAsMTgiIGZpbGw9IiNmNTlmYzIiLz48cG9seWdvbiBwb2ludHM9IjEyMCwwIDE0MCwwIDEzMCwxOCIgZmlsbD0iI2Y2YzA2YSIvPjxwb2x5Z29uIHBvaW50cz0iMTQwLDAgMTYwLDAgMTUwLDE4IiBmaWxsPSIjM2ZhNTliIi8+PHBvbHlnb24gcG9pbnRzPSIxNjAsMCAxODAsMCAxNzAsMTgiIGZpbGw9IiNlNzdhYTkiLz48bGluZSB4MT0iMCIgeTE9IjEiIHgyPSIxODAiIHkyPSIxIiBzdHJva2U9IiNmMGIyY2YiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==");
+  background-repeat: repeat-x;
+  background-size: 180px 24px;
+}
+
+.nepal-hills {
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDEyMDAgMTYwIj48cGF0aCBkPSJNMCAxMjAgTDEyMCA3MCBMMjIwIDExMCBMMzQwIDYwIEw0NjAgMTIwIEw2MDAgNTAgTDc0MCAxMjAgTDg2MCA4MCBMMTAwMCAxMzAgTDExMjAgOTAgTDEyMDAgMTIwIEwxMjAwIDE2MCBMMCAxNjAgWiIgZmlsbD0iI2Y2YzZkZCIvPjxwYXRoIGQ9Ik0wIDE0MCBMMTQwIDkwIEwyODAgMTMwIEw0MjAgODAgTDU2MCAxNDAgTDcwMCA3MCBMODQwIDEyMCBMOTgwIDEwMCBMMTIwMCAxNDAgTDEyMDAgMTYwIEwwIDE2MCBaIiBmaWxsPSIjZjFiM2NmIi8+PC9zdmc+");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
 }

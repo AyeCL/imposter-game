@@ -195,40 +195,42 @@ export default function SetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,205,227,0.85),_rgba(255,236,246,0.6)_45%,_rgba(255,250,252,0.95)_100%)] text-rose-900">
+    <div className="min-h-screen nepal-sky text-rose-900">
       <div className="relative isolate overflow-hidden">
+        <div className="pointer-events-none absolute left-0 top-0 h-7 w-full opacity-70 nepal-prayer-flags" />
+        <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
         <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-rose-200/70 blur-3xl" />
-        <div className="pointer-events-none absolute top-24 right-10 h-40 w-40 rounded-full bg-pink-200/70 blur-2xl" />
-        <div className="pointer-events-none absolute bottom-10 left-6 h-52 w-52 rounded-full bg-amber-100/70 blur-3xl" />
+        <div className="pointer-events-none absolute top-24 right-10 h-40 w-40 rounded-full bg-[#f6c06a]/60 blur-2xl" />
+        <div className="pointer-events-none absolute bottom-10 left-6 h-52 w-52 rounded-full bg-rose-200/60 blur-3xl" />
 
         <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 lg:px-10">
-          <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur">
+          <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex flex-col gap-3">
                 <Link
                   href="/"
                   className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-rose-500"
                 >
-                  <FiHeart /> imposter game
+                  <FiHeart /> नेपाली imposter
                 </Link>
                 <h1 className="font-[var(--font-display)] text-4xl font-semibold text-rose-950 sm:text-5xl">
-                  Round setup
+                  Round setup · तयारी
                 </h1>
                 <p className="max-w-2xl text-base text-rose-700 sm:text-lg">
-                  Set the players, choose categories, then add words inside each
-                  one. You can always tweak later.
+                  Set the players (साथी), choose categories, then add words
+                  inside each one. You can always tweak later.
                 </p>
               </div>
-              <div className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700">
+              <div className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700 nepal-dhaka">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiUsers /> Players
+                    <FiUsers /> Players · साथी
                   </span>
                   <span>{activePlayers.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiTag /> Categories
+                    <FiTag /> Categories · विषय
                   </span>
                   <span>
                     {selectedCategories.length} / {categories.length}
@@ -236,7 +238,7 @@ export default function SetupPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiStar /> Words ready
+                    <FiStar /> Words ready · शब्द
                   </span>
                   <span>{selectedWordsCount}</span>
                 </div>
@@ -262,11 +264,11 @@ export default function SetupPage() {
 
           <section className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
             <div className="flex flex-col gap-6">
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                      <FiUsers /> Players
+                      <FiUsers /> Players (साथी)
                     </h2>
                     <p className="text-sm text-rose-600">
                       Tap a card to toggle someone in or out.
@@ -334,9 +336,9 @@ export default function SetupPage() {
                 </form>
               </div>
 
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
                 <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                  <FiStar /> Setup snapshot
+                  <FiStar /> Setup snapshot · झलक
                 </h2>
                 <p className="mt-2 text-sm text-rose-600">
                   Quick totals so you know you are ready to go.
@@ -382,11 +384,11 @@ export default function SetupPage() {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                      <FiTag /> Categories
+                      <FiTag /> Categories (विषय)
                     </h2>
                     <p className="text-sm text-rose-600">
                       Select what kinds of words you want in the round.
@@ -462,11 +464,11 @@ export default function SetupPage() {
                 </form>
               </div>
 
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                      <FiEdit3 /> Word list
+                      <FiEdit3 /> Word list (शब्द)
                     </h2>
                     <p className="text-sm text-rose-600">
                       Editing: {focusedCategory?.name ?? "Pick a category"}
