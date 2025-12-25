@@ -59,10 +59,15 @@ export default function SetupPage() {
 
   useEffect(() => {
     const stored = loadSetupState();
-    setPlayers(stored.players);
-    setCategories(stored.categories);
-    setFocusedCategoryId(stored.categories[0]?.id ?? "");
-    setHasLoaded(true);
+    const timeout = setTimeout(() => {
+      setPlayers(stored.players);
+      setCategories(stored.categories);
+      setFocusedCategoryId(stored.categories[0]?.id ?? "");
+      setHasLoaded(true);
+    }, 0);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   useEffect(() => {

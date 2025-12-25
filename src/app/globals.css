@@ -7,6 +7,10 @@
   --surface-strong: #ffe0ee;
   --accent: #ff7eb6;
   --accent-strong: #ff4f9a;
+  --font-display: "Avenir Next", "Avenir", "Trebuchet MS", "Verdana",
+    "Segoe UI", sans-serif;
+  --font-body: "Nunito", "Avenir Next", "Avenir", "Trebuchet MS", "Verdana",
+    "Segoe UI", sans-serif;
 }
 
 @theme inline {
