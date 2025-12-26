@@ -372,9 +372,13 @@ export default function RoundClient() {
                         </div>
                       )
                     ) : (
-                      <div className="rounded-2xl border border-dashed border-rose-200 bg-white/90 px-4 py-4 text-sm text-rose-500">
+                      <button
+                        className="w-full rounded-2xl border border-dashed border-rose-200 bg-white/90 px-4 py-4 text-left text-sm text-rose-500 transition hover:border-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/70"
+                        type="button"
+                        onClick={revealRole}
+                      >
                         Tap reveal when you are ready. Then pass the phone.
-                      </div>
+                      </button>
                     )}
 
                     <div className="flex flex-wrap gap-2">
@@ -397,13 +401,6 @@ export default function RoundClient() {
                           Reveal role <FiEye />
                         </button>
                       )}
-                      <button
-                        className="inline-flex items-center justify-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-xs font-semibold text-rose-700 transition hover:border-rose-300"
-                        type="button"
-                        onClick={resetRound}
-                      >
-                        End round
-                      </button>
                     </div>
                   </div>
                 )
