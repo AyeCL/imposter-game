@@ -126,14 +126,16 @@ export default function RoundClient() {
       chosenCategory.words[
         Math.floor(Math.random() * chosenCategory.words.length)
       ];
-    const imposter =
-      activePlayers[Math.floor(Math.random() * activePlayers.length)];
+    const order = shuffle(activePlayers.map((player) => player.id));
+    const imposterCandidates = order.slice(1);
+    const imposterId =
+      imposterCandidates[Math.floor(Math.random() * imposterCandidates.length)];
     setRound({
       id: makeId(),
       categoryId: chosenCategory.id,
       word: chosenWord,
-      imposterId: imposter.id,
-      order: shuffle(activePlayers.map((player) => player.id)),
+      imposterId,
+      order,
       currentIndex: 0,
       revealOpen: false,
       completed: false,
