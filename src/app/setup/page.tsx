@@ -16,6 +16,7 @@ import {
   FiUser,
   FiUsers,
 } from "react-icons/fi";
+import LanguageToggle from "@/app/components/LanguageToggle";
 import {
   DEFAULT_IMPOSTER_COUNT,
   STORAGE_KEY,
@@ -27,9 +28,11 @@ import {
   starterCategories,
   starterPlayers,
   type Category,
+  type LanguageCode,
   type Player,
   type SetupState,
 } from "@/lib/game-data";
+import { getCategoryDisplayName, getCopy } from "@/lib/i18n";
 
 const loadSetupState = (): SetupState => {
   if (typeof window === "undefined") {
@@ -50,6 +53,7 @@ export default function SetupPage() {
   const router = useRouter();
   const [players, setPlayers] = useState<Player[]>(starterPlayers);
   const [categories, setCategories] = useState<Category[]>(starterCategories);
+  const [language, setLanguage] = useState<LanguageCode>("en");
   const [imposterCount, setImposterCount] = useState(DEFAULT_IMPOSTER_COUNT);
   const [playerName, setPlayerName] = useState("");
   const [categoryName, setCategoryName] = useState("");
@@ -60,11 +64,14 @@ export default function SetupPage() {
   const [startError, setStartError] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 
+  const copy = getCopy(language);
+
   useEffect(() => {
     const stored = loadSetupState();
     const timeout = setTimeout(() => {
       setPlayers(stored.players);
       setCategories(stored.categories);
+      setLanguage(stored.language);
       setImposterCount(stored.imposterCount);
       setFocusedCategoryId(stored.categories[0]?.id ?? "");
       setHasLoaded(true);
@@ -100,6 +107,9 @@ export default function SetupPage() {
     () => categories.find((category) => category.id === focusedCategoryId),
     [categories, focusedCategoryId]
   );
+  const focusedCategoryName = focusedCategory
+    ? getCategoryDisplayName(language, focusedCategory.id, focusedCategory.name)
+    : "";
   const totalWords = useMemo(
     () => categories.reduce((sum, category) => sum + category.words.length, 0),
     [categories]
@@ -120,10 +130,16 @@ export default function SetupPage() {
       JSON.stringify({
         players,
         categories,
+        language,
         imposterCount: clampedImposterCount,
       })
     );
-  }, [categories, clampedImposterCount, hasLoaded, players]);
+  }, [categories, clampedImposterCount, hasLoaded, language, players]);
+
+  const updateLanguage = (nextLanguage: LanguageCode) => {
+    setLanguage(nextLanguage);
+    setStartError(null);
+  };
 
   const updateImposterCount = (value: number) => {
     setImposterCount(normalizeImposterCount(value, activePlayers.length));
@@ -151,9 +167,7 @@ export default function SetupPage() {
   const togglePlayer = (id: string) => {
     setPlayers((prev) =>
       prev.map((player) =>
-        player.id === id
-          ? { ...player, active: !player.active }
-          : player
+        player.id === id ? { ...player, active: !player.active } : player
       )
     );
     setStartError(null);
@@ -211,15 +225,15 @@ export default function SetupPage() {
       (category) => category.selected && category.words.length > 0
     );
     if (eligiblePlayers.length < 3) {
-      setStartError("Pick at least 3 active players to start.");
+      setStartError(copy.setup.needsPlayers);
       return;
     }
     if (eligibleCategories.length === 0) {
-      setStartError("Select at least one category with words.");
+      setStartError(copy.setup.needsCategory);
       return;
     }
     if (clampedImposterCount > eligiblePlayers.length - 1) {
-      setStartError("Imposters must be fewer than active players.");
+      setStartError(copy.setup.needsImposterCap);
       return;
     }
     window.localStorage.setItem(
@@ -227,6 +241,7 @@ export default function SetupPage() {
       JSON.stringify({
         players,
         categories,
+        language,
         imposterCount: clampedImposterCount,
       })
     );
@@ -243,30 +258,36 @@ export default function SetupPage() {
           <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex flex-col gap-3">
-                <Link
-                  href="/"
-                  className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-rose-500"
-                >
-                  <FiHeart /> नेपाली imposter
-                </Link>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    href="/"
+                    className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-rose-500"
+                  >
+                    <FiHeart /> {copy.appName}
+                  </Link>
+                  <LanguageToggle
+                    label={copy.languageLabel}
+                    language={language}
+                    onChange={updateLanguage}
+                  />
+                </div>
                 <h1 className="font-[var(--font-display)] text-4xl font-semibold text-rose-950 sm:text-5xl">
-                  Round setup · तयारी
+                  {copy.setup.title}
                 </h1>
                 <p className="max-w-2xl text-base text-rose-700 sm:text-lg">
-                  Set the players (साथी), choose categories, then add words
-                  inside each one. You can always tweak later.
+                  {copy.setup.intro}
                 </p>
               </div>
               <div className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700 nepal-dhaka">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiUsers /> Players · साथी
+                    <FiUsers /> {copy.common.players}
                   </span>
                   <span>{activePlayers.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiShield /> Imposters · भेषधारी
+                    <FiShield /> {copy.common.imposters}
                   </span>
                   <span>
                     {clampedImposterCount} / {maxImposterCount}
@@ -274,7 +295,7 @@ export default function SetupPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiTag /> Categories · विषय
+                    <FiTag /> {copy.common.categories}
                   </span>
                   <span>
                     {selectedCategories.length} / {categories.length}
@@ -282,7 +303,7 @@ export default function SetupPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiStar /> Words ready · शब्द
+                    <FiStar /> {copy.common.wordsReady}
                   </span>
                   <span>{selectedWordsCount}</span>
                 </div>
@@ -291,7 +312,7 @@ export default function SetupPage() {
                   type="button"
                   onClick={startRound}
                 >
-                  Start round <FiArrowRight />
+                  {copy.common.startRound} <FiArrowRight />
                 </button>
                 {startError ? (
                   <p className="text-xs font-semibold text-rose-500">
@@ -299,7 +320,7 @@ export default function SetupPage() {
                   </p>
                 ) : (
                   <p className="text-xs text-rose-500">
-                    Build your setup, then jump into reveal mode.
+                    {copy.setup.buildHint}
                   </p>
                 )}
               </div>
@@ -312,14 +333,14 @@ export default function SetupPage() {
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                      <FiUsers /> Players (साथी)
+                      <FiUsers /> {copy.setup.playersTitle}
                     </h2>
                     <p className="text-sm text-rose-600">
-                      Tap a card to toggle someone in or out.
+                      {copy.setup.playersHint}
                     </p>
                   </div>
                   <span className="inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">
-                    🎀 {activePlayers.length} active
+                    🎭 {activePlayers.length} {copy.common.active}
                   </span>
                 </div>
 
@@ -344,7 +365,9 @@ export default function SetupPage() {
                             <FiUser className="text-base" /> {player.name}
                           </span>
                           <span className="text-xs text-rose-500">
-                            {player.active ? "In the round" : "Sitting out"}
+                            {player.active
+                              ? copy.common.inRound
+                              : copy.common.sittingOut}
                           </span>
                         </span>
                       </span>
@@ -367,7 +390,7 @@ export default function SetupPage() {
                 >
                   <input
                     className="flex-1 rounded-full border border-rose-100 bg-white px-4 py-2 text-sm text-rose-900 outline-none transition placeholder:text-rose-300 focus:border-rose-300"
-                    placeholder="Add a player name"
+                    placeholder={copy.setup.addPlayerPlaceholder}
                     value={playerName}
                     onChange={(event) => setPlayerName(event.target.value)}
                   />
@@ -375,7 +398,7 @@ export default function SetupPage() {
                     className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-rose-200 transition hover:bg-rose-600"
                     type="submit"
                   >
-                    <FiPlus /> Add player
+                    <FiPlus /> {copy.setup.addPlayer}
                   </button>
                 </form>
 
@@ -383,20 +406,20 @@ export default function SetupPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3 className="flex items-center gap-2 text-sm font-semibold text-rose-900">
-                        <FiShield /> Imposters (भेषधारी)
+                        <FiShield /> {copy.setup.impostersTitle}
                       </h3>
                       <p className="mt-1 text-xs text-rose-500">
-                        Pick how many secret players are hiding this round.
+                        {copy.setup.impostersHint}
                       </p>
                     </div>
                     <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
-                      max {maxImposterCount}
+                      {copy.setup.max} {maxImposterCount}
                     </span>
                   </div>
 
                   <div className="mt-4 flex items-center gap-3">
                     <button
-                      aria-label="Decrease imposters"
+                      aria-label={copy.setup.decreaseImposters}
                       className="flex h-10 w-10 items-center justify-center rounded-full border border-rose-200 bg-white text-rose-700 transition hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-40"
                       type="button"
                       onClick={() => updateImposterCount(clampedImposterCount - 1)}
@@ -410,7 +433,7 @@ export default function SetupPage() {
                       </span>
                     </div>
                     <button
-                      aria-label="Increase imposters"
+                      aria-label={copy.setup.increaseImposters}
                       className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-500 text-white shadow-md shadow-rose-200 transition hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-40"
                       type="button"
                       onClick={() => updateImposterCount(clampedImposterCount + 1)}
@@ -421,7 +444,7 @@ export default function SetupPage() {
                   </div>
 
                   <input
-                    aria-label="Number of imposters"
+                    aria-label={copy.setup.numberOfImposters}
                     className="mt-4 w-full accent-rose-600"
                     type="range"
                     min={minImposterCount}
@@ -433,42 +456,40 @@ export default function SetupPage() {
                     disabled={maxImposterCount <= minImposterCount}
                   />
                   <p className="mt-2 text-xs text-rose-500">
-                    {wordHolderCount} player
-                    {wordHolderCount === 1 ? "" : "s"} will see the secret
-                    word.
+                    {copy.setup.wordHolderCount(wordHolderCount)}
                   </p>
                 </div>
               </div>
 
               <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
                 <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                  <FiStar /> Setup snapshot · झलक
+                  <FiStar /> {copy.setup.snapshotTitle}
                 </h2>
                 <p className="mt-2 text-sm text-rose-600">
-                  Quick totals so you know you are ready to go.
+                  {copy.setup.snapshotHint}
                 </p>
 
                 <div className="mt-4 grid gap-3 text-sm text-rose-700">
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Players ready</span>
+                    <span>{copy.setup.playersReady}</span>
                     <span className="font-semibold">
                       {activePlayers.length} / {players.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Imposters</span>
+                    <span>{copy.common.imposters}</span>
                     <span className="font-semibold">
                       {clampedImposterCount} / {maxImposterCount}
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Selected categories</span>
+                    <span>{copy.setup.selectedCategories}</span>
                     <span className="font-semibold">
                       {selectedCategories.length} / {categories.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Total words</span>
+                    <span>{copy.setup.totalWords}</span>
                     <span className="font-semibold">{totalWords}</span>
                   </div>
                 </div>
@@ -476,7 +497,7 @@ export default function SetupPage() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   {selectedCategories.length === 0 ? (
                     <p className="text-xs text-rose-500">
-                      Pick a category to see it here.
+                      {copy.setup.pickCategory}
                     </p>
                   ) : (
                     selectedCategories.map((category) => (
@@ -485,7 +506,11 @@ export default function SetupPage() {
                         className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-rose-700 shadow-sm"
                       >
                         <span className="text-sm">{category.emoji}</span>
-                        {category.name}
+                        {getCategoryDisplayName(
+                          language,
+                          category.id,
+                          category.name
+                        )}
                       </span>
                     ))
                   )}
@@ -498,20 +523,25 @@ export default function SetupPage() {
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                      <FiTag /> Categories (विषय)
+                      <FiTag /> {copy.setup.categoriesTitle}
                     </h2>
                     <p className="text-sm text-rose-600">
-                      Select what kinds of words you want in the round.
+                      {copy.setup.categoriesHint}
                     </p>
                   </div>
                   <span className="inline-flex items-center gap-2 rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">
-                    💖 {selectedCategories.length} selected
+                    🇳🇵 {copy.setup.selectedBadge(selectedCategories.length)}
                   </span>
                 </div>
 
                 <div className="mt-5 grid gap-3">
                   {categories.map((category) => {
                     const isFocused = category.id === focusedCategoryId;
+                    const categoryDisplayName = getCategoryDisplayName(
+                      language,
+                      category.id,
+                      category.name
+                    );
                     return (
                       <div
                         key={category.id}
@@ -531,10 +561,10 @@ export default function SetupPage() {
                           </span>
                           <span>
                             <span className="text-sm font-semibold text-rose-900">
-                              {category.name}
+                              {categoryDisplayName}
                             </span>
                             <span className="block text-xs text-rose-500">
-                              {category.words.length} words
+                              {copy.setup.wordCount(category.words.length)}
                             </span>
                           </span>
                         </button>
@@ -548,7 +578,9 @@ export default function SetupPage() {
                           onClick={() => toggleCategory(category.id)}
                         >
                           <FiCheck />
-                          {category.selected ? "Selected" : "Off"}
+                          {category.selected
+                            ? copy.common.selected
+                            : copy.common.off}
                         </button>
                       </div>
                     );
@@ -561,7 +593,7 @@ export default function SetupPage() {
                 >
                   <input
                     className="flex-1 rounded-full border border-rose-100 bg-white px-4 py-2 text-sm text-rose-900 outline-none transition placeholder:text-rose-300 focus:border-rose-300"
-                    placeholder="Add a new category"
+                    placeholder={copy.setup.addCategoryPlaceholder}
                     value={categoryName}
                     onChange={(event) => setCategoryName(event.target.value)}
                   />
@@ -569,7 +601,7 @@ export default function SetupPage() {
                     className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-rose-200 transition hover:bg-rose-600"
                     type="submit"
                   >
-                    <FiPlus /> Add category
+                    <FiPlus /> {copy.setup.addCategory}
                   </button>
                 </form>
               </div>
@@ -578,15 +610,16 @@ export default function SetupPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                      <FiEdit3 /> Word list (शब्द)
+                      <FiEdit3 /> {copy.setup.wordListTitle}
                     </h2>
                     <p className="text-sm text-rose-600">
-                      Editing: {focusedCategory?.name ?? "Pick a category"}
+                      {copy.setup.editing}:{" "}
+                      {focusedCategoryName || copy.setup.pickCategory}
                     </p>
                   </div>
                   {focusedCategory ? (
                     <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
-                      {focusedCategory.words.length} words
+                      {copy.setup.wordCount(focusedCategory.words.length)}
                     </span>
                   ) : null}
                 </div>
@@ -603,9 +636,7 @@ export default function SetupPage() {
                       </span>
                     ))
                   ) : (
-                    <p className="text-xs text-rose-500">
-                      No words yet. Add your first word below.
-                    </p>
+                    <p className="text-xs text-rose-500">{copy.setup.noWords}</p>
                   )}
                 </div>
 
@@ -615,9 +646,9 @@ export default function SetupPage() {
                 >
                   <input
                     className="flex-1 rounded-full border border-rose-100 bg-white px-4 py-2 text-sm text-rose-900 outline-none transition placeholder:text-rose-300 focus:border-rose-300"
-                    placeholder={`Add a word to ${
-                      focusedCategory?.name ?? "this category"
-                    }`}
+                    placeholder={copy.setup.addWordPlaceholder(
+                      focusedCategoryName || copy.setup.wordListTitle
+                    )}
                     value={newWord}
                     onChange={(event) => setNewWord(event.target.value)}
                     disabled={!focusedCategory}
@@ -627,7 +658,7 @@ export default function SetupPage() {
                     type="submit"
                     disabled={!focusedCategory}
                   >
-                    <FiPlus /> Add word
+                    <FiPlus /> {copy.setup.addWord}
                   </button>
                 </form>
               </div>

@@ -17,10 +17,17 @@ export type SetupState = {
   players: Player[];
   categories: Category[];
   imposterCount: number;
+  language: LanguageCode;
 };
+
+export type LanguageCode = "en" | "ne";
 
 export const STORAGE_KEY = "imposter-game-setup-v1";
 export const DEFAULT_IMPOSTER_COUNT = 1;
+export const DEFAULT_LANGUAGE: LanguageCode = "en";
+
+export const normalizeLanguage = (value: unknown): LanguageCode =>
+  value === "ne" ? "ne" : DEFAULT_LANGUAGE;
 
 export const emojiPool = ["🏔️", "🥟", "☀️", "🌙", "🪷", "🪁", "🎭", "🔥"];
 
@@ -196,6 +203,7 @@ export const normalizeSetupState = (value: unknown): SetupState => {
   return {
     players,
     categories,
+    language: normalizeLanguage(candidate?.language),
     imposterCount: normalizeImposterCount(
       candidate?.imposterCount,
       activePlayerCount

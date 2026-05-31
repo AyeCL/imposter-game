@@ -12,15 +12,19 @@ import {
   FiStar,
   FiUsers,
 } from "react-icons/fi";
+import LanguageToggle from "@/app/components/LanguageToggle";
 import {
   DEFAULT_IMPOSTER_COUNT,
+  DEFAULT_LANGUAGE,
   STORAGE_KEY,
   normalizeImposterCount,
   normalizeSetupState,
   type Category,
+  type LanguageCode,
   type Player,
   type SetupState,
 } from "@/lib/game-data";
+import { getCategoryDisplayName, getCopy } from "@/lib/i18n";
 
 type Round = {
   id: string;
@@ -68,6 +72,9 @@ export default function RoundClient() {
   const [autoStarted, setAutoStarted] = useState(false);
   const [showRoles, setShowRoles] = useState(false);
 
+  const language = setup?.language ?? DEFAULT_LANGUAGE;
+  const copy = getCopy(language);
+
   useEffect(() => {
     const stored = loadSetupState();
     const timeout = setTimeout(() => {
@@ -107,6 +114,10 @@ export default function RoundClient() {
     return categories.find((category) => category.id === round.categoryId) ?? null;
   }, [categories, round]);
 
+  const roundCategoryName = roundCategory
+    ? getCategoryDisplayName(language, roundCategory.id, roundCategory.name)
+    : null;
+
   const currentRoundPlayer = useMemo<Player | null>(() => {
     if (!round || round.completed) return null;
     const playerId = round.order[round.currentIndex];
@@ -129,14 +140,27 @@ export default function RoundClient() {
     eligibleCategories.length > 0 &&
     hasLoaded;
 
+  const updateLanguage = (nextLanguage: LanguageCode) => {
+    const nextSetup = {
+      ...(setup ?? normalizeSetupState(null)),
+      language: nextLanguage,
+    };
+
+    setSetup(nextSetup);
+    setRoundError(null);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSetup));
+    }
+  };
+
   const startRound = useCallback(() => {
     if (!canStart) {
       setRoundError(
         activePlayers.length < 3
-          ? "Need at least 3 active players."
+          ? copy.setup.needsPlayers
           : imposterCount > activePlayers.length - 1
-            ? "Imposters must be fewer than active players."
-          : "Pick a selected category with words."
+            ? copy.setup.needsImposterCap
+            : copy.setup.needsCategory
       );
       setRound(null);
       return;
@@ -161,7 +185,7 @@ export default function RoundClient() {
     });
     setRoundError(null);
     setShowRoles(false);
-  }, [activePlayers, canStart, eligibleCategories, imposterCount]);
+  }, [activePlayers, canStart, copy, eligibleCategories, imposterCount]);
 
   useEffect(() => {
     if (!autoStart || autoStarted || !canStart) return;
@@ -211,36 +235,42 @@ export default function RoundClient() {
           <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex flex-col gap-3">
-                <Link
-                  href="/setup"
-                  className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-rose-500"
-                >
-                  <FiArrowLeft /> back to setup
-                </Link>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    href="/setup"
+                    className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-rose-500"
+                  >
+                    <FiArrowLeft /> {copy.round.backToSetup}
+                  </Link>
+                  <LanguageToggle
+                    label={copy.languageLabel}
+                    language={language}
+                    onChange={updateLanguage}
+                  />
+                </div>
                 <h1 className="font-[var(--font-display)] text-4xl font-semibold text-rose-950 sm:text-5xl">
-                  Reveal round · खुलासा
+                  {copy.round.title}
                 </h1>
                 <p className="max-w-2xl text-base text-rose-700 sm:text-lg">
-                  Pass the phone, tap reveal, and keep the word a secret from
-                  the imposters. शुभ खेल!
+                  {copy.round.intro}
                 </p>
               </div>
               <div className="flex w-full max-w-xs flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700 nepal-dhaka">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiUsers /> Players
+                    <FiUsers /> {copy.common.players}
                   </span>
                   <span>{activePlayers.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiShield /> Imposters
+                    <FiShield /> {copy.common.imposters}
                   </span>
                   <span>{imposterCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
-                    <FiStar /> Categories
+                    <FiStar /> {copy.common.categories}
                   </span>
                   <span>{eligibleCategories.length}</span>
                 </div>
@@ -249,7 +279,7 @@ export default function RoundClient() {
                   type="button"
                   onClick={startRound}
                 >
-                  New round <FiRefreshCw />
+                  {copy.round.newRound} <FiRefreshCw />
                 </button>
                 {roundError ? (
                   <p className="text-xs font-semibold text-rose-500">
@@ -257,7 +287,7 @@ export default function RoundClient() {
                   </p>
                 ) : (
                   <p className="text-xs text-rose-500">
-                    Need edits? Jump back to setup.
+                    {copy.round.editHint}
                   </p>
                 )}
               </div>
@@ -271,18 +301,18 @@ export default function RoundClient() {
                   <div className="flex flex-col gap-4">
                     <div className="rounded-2xl bg-rose-50/80 px-4 py-4 text-sm">
                       <p className="text-base font-semibold text-rose-900">
-                        Everyone has their role.
+                        {copy.round.everyoneReady}
                       </p>
                       <p className="mt-1 text-sm text-rose-600">
-                        Put the phone down and start the questions.
+                        {copy.round.startQuestions}
                       </p>
                     </div>
                     <div className="rounded-2xl border border-rose-100 bg-white px-4 py-4 text-sm text-rose-600">
                       <p className="font-semibold text-rose-900">
-                        Want to reveal roles at the end?
+                        {copy.round.endRevealTitle}
                       </p>
                       <p className="mt-1 text-sm text-rose-500">
-                        Tap when the game ends to see who was who.
+                        {copy.round.endRevealHint}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         <button
@@ -290,18 +320,19 @@ export default function RoundClient() {
                           type="button"
                           onClick={() => setShowRoles((prev) => !prev)}
                         >
-                          {showRoles ? "Hide roles" : "Show roles"}
+                          {showRoles
+                            ? copy.round.hideRoles
+                            : copy.round.showRoles}
                         </button>
                       </div>
                     </div>
                     {showRoles ? (
                       <div className="rounded-2xl border border-rose-100 bg-white px-4 py-4 text-sm text-rose-700">
                         <div className="flex items-center justify-between text-xs text-rose-500">
-                          <span>Final roles</span>
+                          <span>{copy.round.finalRoles}</span>
                           <span>
-                            {round.imposterIds.length} imposter
-                            {round.imposterIds.length === 1 ? "" : "s"} ·{" "}
-                            {roundCategory?.name ?? "—"}
+                            {copy.round.imposterCount(round.imposterIds.length)}{" "}
+                            · {roundCategoryName ?? "-"}
                           </span>
                         </div>
                         <div className="mt-3 grid gap-2">
@@ -320,10 +351,12 @@ export default function RoundClient() {
                                   <span className="text-base">
                                     {player?.emoji ?? "❓"}
                                   </span>
-                                  {player?.name ?? "Player"}
+                                  {player?.name ?? copy.common.player}
                                 </span>
                                 <span className="text-rose-600">
-                                  {isImposter ? "Imposter 😈" : round.word}
+                                  {isImposter
+                                    ? copy.common.imposterRole
+                                    : round.word}
                                 </span>
                               </div>
                             );
@@ -337,14 +370,14 @@ export default function RoundClient() {
                         type="button"
                         onClick={startRound}
                       >
-                        Shuffle new round <FiRefreshCw />
+                        {copy.round.newRound} <FiRefreshCw />
                       </button>
                       <button
                         className="inline-flex items-center justify-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-xs font-semibold text-rose-700 transition hover:border-rose-300"
                         type="button"
                         onClick={resetRound}
                       >
-                        Clear
+                        {copy.round.clear}
                       </button>
                     </div>
                   </div>
@@ -352,10 +385,11 @@ export default function RoundClient() {
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between text-xs text-rose-500">
                       <span>
-                        Player {round.currentIndex + 1} of {round.order.length}
+                        {copy.common.player} {round.currentIndex + 1} /{" "}
+                        {round.order.length}
                       </span>
                       <span>
-                        Category: {roundCategory?.name ?? "—"}
+                        {copy.common.category}: {roundCategoryName ?? "-"}
                       </span>
                     </div>
                     <div className="flex items-center gap-4 rounded-3xl bg-rose-50/80 px-5 py-4">
@@ -364,10 +398,10 @@ export default function RoundClient() {
                       </span>
                       <div>
                         <p className="text-lg font-semibold text-rose-900">
-                          {currentRoundPlayer?.name ?? "Player"}
+                          {currentRoundPlayer?.name ?? copy.common.player}
                         </p>
                         <p className="text-sm text-rose-600">
-                          Keep the phone to yourself while you peek.
+                          {copy.round.keepPhone}
                         </p>
                       </div>
                     </div>
@@ -376,29 +410,27 @@ export default function RoundClient() {
                       isCurrentPlayerImposter ? (
                         <div className="rounded-2xl border border-rose-100 bg-white px-4 py-4">
                           <p className="text-sm font-semibold text-rose-900">
-                            You are{" "}
-                            {round.imposterIds.length === 1
-                              ? "the imposter"
-                              : `one of ${round.imposterIds.length} imposters`}{" "}
-                            😈
+                            {copy.round.imposterMessage(
+                              round.imposterIds.length
+                            )}
                           </p>
                           <p className="mt-1 text-xs text-rose-500">
-                            Category: {roundCategory?.name ?? "—"}
+                            {copy.common.category}: {roundCategoryName ?? "-"}
                           </p>
                           <p className="mt-2 text-sm text-rose-600">
-                            Blend in and figure out the word.
+                            {copy.round.blendIn}
                           </p>
                         </div>
                       ) : (
                         <div className="rounded-2xl border border-rose-100 bg-white px-4 py-4">
                           <p className="text-sm font-semibold text-rose-900">
-                            Secret word
+                            {copy.round.secretWord}
                           </p>
                           <p className="mt-1 text-2xl font-semibold text-rose-900">
                             {round.word}
                           </p>
                           <p className="mt-1 text-xs text-rose-500">
-                            Category: {roundCategory?.name ?? "—"}
+                            {copy.common.category}: {roundCategoryName ?? "-"}
                           </p>
                         </div>
                       )
@@ -408,7 +440,7 @@ export default function RoundClient() {
                         type="button"
                         onClick={revealRole}
                       >
-                        Tap reveal when you are ready. Then pass the phone.
+                        {copy.round.tapReveal}
                       </button>
                     )}
 
@@ -420,8 +452,8 @@ export default function RoundClient() {
                           onClick={nextPlayer}
                         >
                           {round.currentIndex >= round.order.length - 1
-                            ? "Finish round"
-                            : "Next player"}
+                            ? copy.round.finishRound
+                            : copy.round.nextPlayer}
                         </button>
                       ) : (
                         <button
@@ -429,7 +461,7 @@ export default function RoundClient() {
                           type="button"
                           onClick={revealRole}
                         >
-                          Reveal role <FiEye />
+                          {copy.round.revealRole} <FiEye />
                         </button>
                       )}
                     </div>
@@ -439,10 +471,10 @@ export default function RoundClient() {
                 <div className="flex flex-col gap-4">
                   <div className="rounded-2xl bg-rose-50/80 px-4 py-4 text-sm">
                     <p className="text-base font-semibold text-rose-900">
-                      No round running yet.
+                      {copy.round.noRound}
                     </p>
                     <p className="mt-1 text-sm text-rose-600">
-                      Start a round to shuffle roles and a word.
+                      {copy.round.startShuffle}
                     </p>
                   </div>
                   <button
@@ -450,7 +482,7 @@ export default function RoundClient() {
                     type="button"
                     onClick={startRound}
                   >
-                    Start round <FiRefreshCw />
+                    {copy.common.startRound} <FiRefreshCw />
                   </button>
                 </div>
               )}
@@ -459,30 +491,30 @@ export default function RoundClient() {
             <div className="flex flex-col gap-6">
               <div className="rounded-3xl border border-rose-100 bg-white/85 p-6 shadow-[0_18px_50px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
                 <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
-                  <FiHeart /> Round checklist · जाँच
+                  <FiHeart /> {copy.round.checklistTitle}
                 </h2>
                 <p className="mt-2 text-sm text-rose-600">
-                  Quick sanity check before you begin.
+                  {copy.round.checklistHint}
                 </p>
                 <div className="mt-4 grid gap-3 text-sm text-rose-700">
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Active players</span>
+                    <span>{copy.round.activePlayers}</span>
                     <span className="font-semibold">
                       {activePlayers.length} / {players.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Imposters</span>
+                    <span>{copy.common.imposters}</span>
                     <span className="font-semibold">{imposterCount}</span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Selected categories</span>
+                    <span>{copy.setup.selectedCategories}</span>
                     <span className="font-semibold">
                       {selectedCategories.length} / {categories.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
-                    <span>Words available</span>
+                    <span>{copy.round.wordsAvailable}</span>
                     <span className="font-semibold">
                       {eligibleCategories.reduce(
                         (sum, category) => sum + category.words.length,
@@ -494,22 +526,23 @@ export default function RoundClient() {
 
                 {!canStart ? (
                   <div className="mt-4 rounded-2xl border border-dashed border-rose-200 bg-white/90 px-4 py-4 text-sm text-rose-500">
-                    Add at least 3 active players and a category with words to
-                    start.
+                    {copy.round.notReady}
                   </div>
                 ) : (
                   <div className="mt-4 rounded-2xl border border-rose-100 bg-white/90 px-4 py-4 text-sm text-rose-600">
-                    All set. Pass the phone and tap reveal.
+                    {copy.round.ready}
                   </div>
                 )}
               </div>
 
               <div className="rounded-3xl border border-rose-100 bg-white/85 p-6 text-sm text-rose-600 shadow-[0_18px_50px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
-                <p className="font-semibold text-rose-800">Quick tips</p>
+                <p className="font-semibold text-rose-800">
+                  {copy.round.tipsTitle}
+                </p>
                 <ul className="mt-2 list-disc space-y-1 pl-4">
-                  <li>Keep the word hidden until everyone peeks.</li>
-                  <li>Imposters only see the category.</li>
-                  <li>After reveals, ask open questions.</li>
+                  {copy.round.tips.map((tip) => (
+                    <li key={tip}>{tip}</li>
+                  ))}
                 </ul>
               </div>
             </div>
