@@ -62,7 +62,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen nepal-sky text-rose-900">
+    <div className="min-h-screen nepal-sky text-[#fffdf3]">
       <div className="relative isolate overflow-hidden">
         <div className="pointer-events-none absolute left-0 top-0 h-7 w-full opacity-70 nepal-prayer-flags" />
         <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
@@ -87,10 +87,10 @@ export default function Home() {
             priority
             className="h-36 w-36 object-contain drop-shadow-[0_18px_30px_rgba(0,56,147,0.18)] sm:h-44 sm:w-44"
           />
-          <h1 className="font-[var(--font-display)] text-4xl font-semibold text-rose-950 sm:text-6xl">
+          <h1 className="font-[var(--font-display)] text-4xl font-semibold text-[#fffdf3] drop-shadow-[0_3px_10px_rgba(6,20,54,0.55)] sm:text-6xl">
             {copy.home.title}
           </h1>
-          <p className="max-w-2xl text-base text-rose-700 sm:text-lg">
+          <p className="max-w-2xl text-base text-[#fff3c8] drop-shadow-[0_2px_8px_rgba(6,20,54,0.5)] sm:text-lg">
             {copy.home.intro}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">

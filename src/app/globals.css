@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f7ff;
+  --background: #061436;
   --foreground: #061436;
-  --surface: #ffffff;
-  --surface-strong: #e8efff;
+  --surface: #fffdf3;
+  --surface-strong: #e9f0ff;
   --accent: #dc143c;
   --accent-strong: #b80f32;
   --nepal-marigold: #f9c74f;
-  --nepal-teal: #2f8f86;
+  --nepal-teal: #1d8f8a;
   --nepal-blue: #003893;
   --nepal-red: #dc143c;
   --nepal-ink: #061436;
@@ -22,11 +22,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-rose-50: #eef4ff;
-  --color-rose-100: #dbe8ff;
-  --color-rose-200: #b9ccf5;
-  --color-rose-300: #7fa0e6;
-  --color-rose-400: #456fbd;
+  --color-rose-50: #edf3ff;
+  --color-rose-100: #d6e4ff;
+  --color-rose-200: #a9c0ee;
+  --color-rose-300: #668ed8;
+  --color-rose-400: #245faf;
   --color-rose-500: #dc143c;
   --color-rose-600: #b80f32;
   --color-rose-700: #003893;
@@ -44,42 +44,67 @@ body {
 }
 
 .nepal-sky {
+  position: relative;
+  isolation: isolate;
   background-color: var(--background);
   background-image: radial-gradient(
-      circle at 24% 8%,
-      rgba(220, 20, 60, 0.18),
-      transparent 32%
+      circle at 10% 8%,
+      rgba(249, 199, 79, 0.28),
+      transparent 18rem
+    ),
+    radial-gradient(
+      circle at 86% 10%,
+      rgba(220, 20, 60, 0.34),
+      transparent 24rem
     ),
     linear-gradient(
       135deg,
-      rgba(0, 56, 147, 0.18),
-      rgba(255, 255, 255, 0.92) 40%,
-      rgba(220, 20, 60, 0.1)
-    ),
-    repeating-linear-gradient(
-      135deg,
-      rgba(0, 56, 147, 0.055) 0 10px,
-      transparent 10px 24px
-    ),
-    repeating-linear-gradient(
-      45deg,
-      rgba(220, 20, 60, 0.055) 0 10px,
-      transparent 10px 26px
+      #061436 0%,
+      #003893 43%,
+      #f7ead0 43.2%,
+      #f7ead0 46%,
+      #dc143c 46.2%,
+      #9d0d2c 100%
     );
+  background-attachment: fixed;
+}
+
+.nepal-sky::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background-image: repeating-linear-gradient(
+      60deg,
+      rgba(255, 255, 255, 0.08) 0 1px,
+      transparent 1px 18px
+    ),
+    repeating-linear-gradient(
+      120deg,
+      rgba(249, 199, 79, 0.08) 0 1px,
+      transparent 1px 22px
+    );
+  opacity: 0.7;
 }
 
 .nepal-dhaka {
+  background-color: rgba(255, 253, 243, 0.94);
   background-image: repeating-linear-gradient(
       45deg,
-      rgba(220, 20, 60, 0.1) 0 6px,
-      transparent 6px 16px
+      rgba(0, 56, 147, 0.16) 0 2px,
+      transparent 2px 12px,
+      rgba(249, 199, 79, 0.16) 12px 14px,
+      transparent 14px 28px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgba(0, 56, 147, 0.1) 0 6px,
-      transparent 6px 16px
+      rgba(220, 20, 60, 0.08) 0 2px,
+      transparent 2px 14px,
+      rgba(255, 255, 255, 0.35) 14px 16px,
+      transparent 16px 30px
     );
-  background-size: 26px 26px;
+  background-size: 34px 34px;
 }
 
 .nepal-prayer-flags {
@@ -97,7 +122,7 @@ body {
 }
 
 .nepal-hills {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='160' viewBox='0 0 1200 160'%3E%3Cpath d='M0 120 L120 70 L220 110 L340 60 L460 120 L600 50 L740 120 L860 80 L1000 130 L1120 90 L1200 120 L1200 160 L0 160 Z' fill='%23003893' fill-opacity='.14'/%3E%3Cpath d='M0 140 L140 90 L280 130 L420 80 L560 140 L700 70 L840 120 L980 100 L1200 140 L1200 160 L0 160 Z' fill='%23dc143c' fill-opacity='.12'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='160' viewBox='0 0 1200 160'%3E%3Cpath d='M0 122 L116 68 L220 112 L342 56 L462 120 L600 44 L742 122 L864 78 L1002 132 L1120 88 L1200 120 L1200 160 L0 160 Z' fill='%23fffdf3' fill-opacity='.72'/%3E%3Cpath d='M0 132 L116 78 L220 122 L342 66 L462 130 L600 54 L742 132 L864 88 L1002 142 L1120 98 L1200 130 L1200 160 L0 160 Z' fill='%23003893' fill-opacity='.28'/%3E%3Cpath d='M0 146 L140 96 L280 136 L420 86 L560 146 L700 76 L840 126 L980 106 L1200 146 L1200 160 L0 160 Z' fill='%23dc143c' fill-opacity='.18'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;

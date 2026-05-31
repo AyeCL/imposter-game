@@ -232,7 +232,7 @@ export default function RoundClient() {
         <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
 
         <main className="relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 lg:px-10">
-          <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
+          <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_22px_70px_rgba(0,56,147,0.28)] backdrop-blur nepal-dhaka">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center gap-3">
@@ -295,7 +295,7 @@ export default function RoundClient() {
           </header>
 
           <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-3xl border border-rose-100 bg-white/85 p-8 shadow-[0_18px_50px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+            <div className="rounded-3xl border border-rose-100 bg-white/85 p-8 shadow-[0_18px_50px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
               {round ? (
                 round.completed ? (
                   <div className="flex flex-col gap-4">
@@ -489,7 +489,7 @@ export default function RoundClient() {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="rounded-3xl border border-rose-100 bg-white/85 p-6 shadow-[0_18px_50px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+              <div className="rounded-3xl border border-rose-100 bg-white/85 p-6 shadow-[0_18px_50px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
                 <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
                   <FiHeart /> {copy.round.checklistTitle}
                 </h2>
@@ -535,7 +535,7 @@ export default function RoundClient() {
                 )}
               </div>
 
-              <div className="rounded-3xl border border-rose-100 bg-white/85 p-6 text-sm text-rose-600 shadow-[0_18px_50px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+              <div className="rounded-3xl border border-rose-100 bg-white/85 p-6 text-sm text-rose-600 shadow-[0_18px_50px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
                 <p className="font-semibold text-rose-800">
                   {copy.round.tipsTitle}
                 </p>

@@ -255,7 +255,7 @@ export default function SetupPage() {
         <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
 
         <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
-          <header className="flex w-full flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-5 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka sm:p-8">
+          <header className="flex w-full flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-5 shadow-[0_22px_70px_rgba(0,56,147,0.28)] backdrop-blur nepal-dhaka sm:p-8">
             <div className="grid w-full min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] xl:items-start">
               <div className="flex min-w-0 flex-col gap-3">
                 <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center">
@@ -329,7 +329,7 @@ export default function SetupPage() {
 
           <section className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
             <div className="flex flex-col gap-6">
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_42px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
@@ -461,7 +461,7 @@ export default function SetupPage() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_42px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
                 <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
                   <FiStar /> {copy.setup.snapshotTitle}
                 </h2>
@@ -519,7 +519,7 @@ export default function SetupPage() {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_42px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
@@ -606,7 +606,7 @@ export default function SetupPage() {
                 </form>
               </div>
 
-              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
+              <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_42px_rgba(0,56,147,0.18)] backdrop-blur nepal-dhaka">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="flex items-center gap-2 font-[var(--font-display)] text-2xl text-rose-900">
