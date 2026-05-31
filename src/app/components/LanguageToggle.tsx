@@ -28,7 +28,7 @@ export default function LanguageToggle({
             key={option.code}
             aria-label={`${label}: ${option.label}`}
             aria-pressed={isSelected}
-            className={`group relative flex h-10 w-10 items-center justify-center rounded-full text-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/70 ${
+            className={`group relative flex h-10 min-w-10 items-center justify-center rounded-full px-2 text-xl transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/70 ${
               isSelected
                 ? "bg-rose-500 text-white shadow-md shadow-rose-200"
                 : "text-rose-700 hover:bg-rose-50"
