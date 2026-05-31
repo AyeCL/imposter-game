@@ -8,16 +8,22 @@ import {
   FiCheck,
   FiEdit3,
   FiHeart,
+  FiMinus,
   FiPlus,
+  FiShield,
   FiStar,
   FiTag,
   FiUser,
   FiUsers,
 } from "react-icons/fi";
 import {
+  DEFAULT_IMPOSTER_COUNT,
   STORAGE_KEY,
   emojiPool,
+  getMaxImposterCount,
   makeId,
+  normalizeImposterCount,
+  normalizeSetupState,
   starterCategories,
   starterPlayers,
   type Category,
@@ -27,20 +33,16 @@ import {
 
 const loadSetupState = (): SetupState => {
   if (typeof window === "undefined") {
-    return { players: starterPlayers, categories: starterCategories };
+    return normalizeSetupState(null);
   }
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) {
-    return { players: starterPlayers, categories: starterCategories };
+    return normalizeSetupState(null);
   }
   try {
-    const parsed = JSON.parse(raw) as SetupState;
-    if (!parsed?.players?.length || !parsed?.categories?.length) {
-      return { players: starterPlayers, categories: starterCategories };
-    }
-    return parsed;
+    return normalizeSetupState(JSON.parse(raw));
   } catch {
-    return { players: starterPlayers, categories: starterCategories };
+    return normalizeSetupState(null);
   }
 };
 
@@ -48,6 +50,7 @@ export default function SetupPage() {
   const router = useRouter();
   const [players, setPlayers] = useState<Player[]>(starterPlayers);
   const [categories, setCategories] = useState<Category[]>(starterCategories);
+  const [imposterCount, setImposterCount] = useState(DEFAULT_IMPOSTER_COUNT);
   const [playerName, setPlayerName] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [newWord, setNewWord] = useState("");
@@ -62,6 +65,7 @@ export default function SetupPage() {
     const timeout = setTimeout(() => {
       setPlayers(stored.players);
       setCategories(stored.categories);
+      setImposterCount(stored.imposterCount);
       setFocusedCategoryId(stored.categories[0]?.id ?? "");
       setHasLoaded(true);
     }, 0);
@@ -70,17 +74,23 @@ export default function SetupPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!hasLoaded) return;
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ players, categories })
-    );
-  }, [players, categories, hasLoaded]);
-
   const activePlayers = useMemo(
     () => players.filter((player) => player.active),
     [players]
+  );
+  const maxImposterCount = useMemo(
+    () => getMaxImposterCount(activePlayers.length),
+    [activePlayers.length]
+  );
+  const minImposterCount =
+    maxImposterCount === 0 ? 0 : DEFAULT_IMPOSTER_COUNT;
+  const clampedImposterCount = useMemo(
+    () => normalizeImposterCount(imposterCount, activePlayers.length),
+    [activePlayers.length, imposterCount]
+  );
+  const wordHolderCount = Math.max(
+    0,
+    activePlayers.length - clampedImposterCount
   );
   const selectedCategories = useMemo(
     () => categories.filter((category) => category.selected),
@@ -102,6 +112,23 @@ export default function SetupPage() {
       ),
     [selectedCategories]
   );
+
+  useEffect(() => {
+    if (!hasLoaded) return;
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        players,
+        categories,
+        imposterCount: clampedImposterCount,
+      })
+    );
+  }, [categories, clampedImposterCount, hasLoaded, players]);
+
+  const updateImposterCount = (value: number) => {
+    setImposterCount(normalizeImposterCount(value, activePlayers.length));
+    setStartError(null);
+  };
 
   const addPlayer = (event: FormEvent) => {
     event.preventDefault();
@@ -142,7 +169,7 @@ export default function SetupPage() {
       {
         id,
         name: trimmed,
-        emoji: "💗",
+        emoji: "🪁",
         selected: true,
         words: [],
       },
@@ -191,6 +218,18 @@ export default function SetupPage() {
       setStartError("Select at least one category with words.");
       return;
     }
+    if (clampedImposterCount > eligiblePlayers.length - 1) {
+      setStartError("Imposters must be fewer than active players.");
+      return;
+    }
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        players,
+        categories,
+        imposterCount: clampedImposterCount,
+      })
+    );
     router.push("/round?autostart=1");
   };
 
@@ -199,9 +238,6 @@ export default function SetupPage() {
       <div className="relative isolate overflow-hidden">
         <div className="pointer-events-none absolute left-0 top-0 h-7 w-full opacity-70 nepal-prayer-flags" />
         <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
-        <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-rose-200/70 blur-3xl" />
-        <div className="pointer-events-none absolute top-24 right-10 h-40 w-40 rounded-full bg-[#f6c06a]/60 blur-2xl" />
-        <div className="pointer-events-none absolute bottom-10 left-6 h-52 w-52 rounded-full bg-rose-200/60 blur-3xl" />
 
         <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 lg:px-10">
           <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
@@ -227,6 +263,14 @@ export default function SetupPage() {
                     <FiUsers /> Players · साथी
                   </span>
                   <span>{activePlayers.length}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 font-semibold">
+                    <FiShield /> Imposters · भेषधारी
+                  </span>
+                  <span>
+                    {clampedImposterCount} / {maxImposterCount}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
@@ -334,6 +378,66 @@ export default function SetupPage() {
                     <FiPlus /> Add player
                   </button>
                 </form>
+
+                <div className="mt-5 rounded-2xl border border-rose-100 bg-white/90 p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="flex items-center gap-2 text-sm font-semibold text-rose-900">
+                        <FiShield /> Imposters (भेषधारी)
+                      </h3>
+                      <p className="mt-1 text-xs text-rose-500">
+                        Pick how many secret players are hiding this round.
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
+                      max {maxImposterCount}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 flex items-center gap-3">
+                    <button
+                      aria-label="Decrease imposters"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-rose-200 bg-white text-rose-700 transition hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-40"
+                      type="button"
+                      onClick={() => updateImposterCount(clampedImposterCount - 1)}
+                      disabled={clampedImposterCount <= minImposterCount}
+                    >
+                      <FiMinus />
+                    </button>
+                    <div className="flex min-w-24 flex-1 items-center justify-center rounded-2xl bg-rose-50/80 px-4 py-3 text-center">
+                      <span className="text-3xl font-semibold text-rose-900">
+                        {clampedImposterCount}
+                      </span>
+                    </div>
+                    <button
+                      aria-label="Increase imposters"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-500 text-white shadow-md shadow-rose-200 transition hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-40"
+                      type="button"
+                      onClick={() => updateImposterCount(clampedImposterCount + 1)}
+                      disabled={clampedImposterCount >= maxImposterCount}
+                    >
+                      <FiPlus />
+                    </button>
+                  </div>
+
+                  <input
+                    aria-label="Number of imposters"
+                    className="mt-4 w-full accent-rose-600"
+                    type="range"
+                    min={minImposterCount}
+                    max={maxImposterCount}
+                    value={clampedImposterCount}
+                    onChange={(event) =>
+                      updateImposterCount(Number(event.target.value))
+                    }
+                    disabled={maxImposterCount <= minImposterCount}
+                  />
+                  <p className="mt-2 text-xs text-rose-500">
+                    {wordHolderCount} player
+                    {wordHolderCount === 1 ? "" : "s"} will see the secret
+                    word.
+                  </p>
+                </div>
               </div>
 
               <div className="rounded-3xl border border-rose-100 bg-white/80 p-6 shadow-[0_16px_40px_rgba(255,143,193,0.18)] backdrop-blur nepal-dhaka">
@@ -349,6 +453,12 @@ export default function SetupPage() {
                     <span>Players ready</span>
                     <span className="font-semibold">
                       {activePlayers.length} / {players.length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
+                    <span>Imposters</span>
+                    <span className="font-semibold">
+                      {clampedImposterCount} / {maxImposterCount}
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">

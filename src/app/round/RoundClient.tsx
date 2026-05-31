@@ -8,13 +8,15 @@ import {
   FiEye,
   FiHeart,
   FiRefreshCw,
+  FiShield,
   FiStar,
   FiUsers,
 } from "react-icons/fi";
 import {
+  DEFAULT_IMPOSTER_COUNT,
   STORAGE_KEY,
-  starterCategories,
-  starterPlayers,
+  normalizeImposterCount,
+  normalizeSetupState,
   type Category,
   type Player,
   type SetupState,
@@ -24,7 +26,7 @@ type Round = {
   id: string;
   categoryId: string;
   word: string;
-  imposterId: string;
+  imposterIds: string[];
   order: string[];
   currentIndex: number;
   revealOpen: boolean;
@@ -36,11 +38,7 @@ const loadSetupState = (): SetupState | null => {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw) as SetupState;
-    if (!parsed?.players?.length || !parsed?.categories?.length) {
-      return null;
-    }
-    return parsed;
+    return normalizeSetupState(JSON.parse(raw));
   } catch {
     return null;
   }
@@ -73,7 +71,7 @@ export default function RoundClient() {
   useEffect(() => {
     const stored = loadSetupState();
     const timeout = setTimeout(() => {
-      setSetup(stored ?? { players: starterPlayers, categories: starterCategories });
+      setSetup(stored ?? normalizeSetupState(null));
       setHasLoaded(true);
     }, 0);
     return () => {
@@ -86,6 +84,14 @@ export default function RoundClient() {
   const activePlayers = useMemo(
     () => players.filter((player) => player.active),
     [players]
+  );
+  const imposterCount = useMemo(
+    () =>
+      normalizeImposterCount(
+        setup?.imposterCount ?? DEFAULT_IMPOSTER_COUNT,
+        activePlayers.length
+      ),
+    [activePlayers.length, setup?.imposterCount]
   );
   const selectedCategories = useMemo(
     () => categories.filter((category) => category.selected),
@@ -107,14 +113,29 @@ export default function RoundClient() {
     return players.find((player) => player.id === playerId) ?? null;
   }, [players, round]);
 
+  const isCurrentPlayerImposter = useMemo(
+    () =>
+      Boolean(
+        round &&
+          currentRoundPlayer &&
+          round.imposterIds.includes(currentRoundPlayer.id)
+      ),
+    [currentRoundPlayer, round]
+  );
+
   const canStart =
-    activePlayers.length >= 3 && eligibleCategories.length > 0 && hasLoaded;
+    activePlayers.length >= 3 &&
+    imposterCount <= activePlayers.length - 1 &&
+    eligibleCategories.length > 0 &&
+    hasLoaded;
 
   const startRound = useCallback(() => {
     if (!canStart) {
       setRoundError(
         activePlayers.length < 3
           ? "Need at least 3 active players."
+          : imposterCount > activePlayers.length - 1
+            ? "Imposters must be fewer than active players."
           : "Pick a selected category with words."
       );
       setRound(null);
@@ -127,14 +148,12 @@ export default function RoundClient() {
         Math.floor(Math.random() * chosenCategory.words.length)
       ];
     const order = shuffle(activePlayers.map((player) => player.id));
-    const imposterCandidates = order.slice(1);
-    const imposterId =
-      imposterCandidates[Math.floor(Math.random() * imposterCandidates.length)];
+    const imposterIds = shuffle(order).slice(0, imposterCount);
     setRound({
       id: makeId(),
       categoryId: chosenCategory.id,
       word: chosenWord,
-      imposterId,
+      imposterIds,
       order,
       currentIndex: 0,
       revealOpen: false,
@@ -142,7 +161,7 @@ export default function RoundClient() {
     });
     setRoundError(null);
     setShowRoles(false);
-  }, [activePlayers, canStart, eligibleCategories]);
+  }, [activePlayers, canStart, eligibleCategories, imposterCount]);
 
   useEffect(() => {
     if (!autoStart || autoStarted || !canStart) return;
@@ -187,9 +206,6 @@ export default function RoundClient() {
       <div className="relative isolate overflow-hidden">
         <div className="pointer-events-none absolute left-0 top-0 h-7 w-full opacity-70 nepal-prayer-flags" />
         <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
-        <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-rose-200/70 blur-3xl" />
-        <div className="pointer-events-none absolute top-24 right-10 h-40 w-40 rounded-full bg-[#f6c06a]/60 blur-2xl" />
-        <div className="pointer-events-none absolute bottom-10 left-6 h-52 w-52 rounded-full bg-rose-200/60 blur-3xl" />
 
         <main className="relative mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 lg:px-10">
           <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
@@ -206,7 +222,7 @@ export default function RoundClient() {
                 </h1>
                 <p className="max-w-2xl text-base text-rose-700 sm:text-lg">
                   Pass the phone, tap reveal, and keep the word a secret from
-                  the imposter. शुभ खेल!
+                  the imposters. शुभ खेल!
                 </p>
               </div>
               <div className="flex w-full max-w-xs flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700 nepal-dhaka">
@@ -215,6 +231,12 @@ export default function RoundClient() {
                     <FiUsers /> Players
                   </span>
                   <span>{activePlayers.length}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 font-semibold">
+                    <FiShield /> Imposters
+                  </span>
+                  <span>{imposterCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
@@ -277,7 +299,9 @@ export default function RoundClient() {
                         <div className="flex items-center justify-between text-xs text-rose-500">
                           <span>Final roles</span>
                           <span>
-                            Category: {roundCategory?.name ?? "—"}
+                            {round.imposterIds.length} imposter
+                            {round.imposterIds.length === 1 ? "" : "s"} ·{" "}
+                            {roundCategory?.name ?? "—"}
                           </span>
                         </div>
                         <div className="mt-3 grid gap-2">
@@ -285,7 +309,8 @@ export default function RoundClient() {
                             const player = players.find(
                               (item) => item.id === playerId
                             );
-                            const isImposter = playerId === round.imposterId;
+                            const isImposter =
+                              round.imposterIds.includes(playerId);
                             return (
                               <div
                                 key={playerId}
@@ -348,10 +373,14 @@ export default function RoundClient() {
                     </div>
 
                     {round.revealOpen ? (
-                      currentRoundPlayer?.id === round.imposterId ? (
+                      isCurrentPlayerImposter ? (
                         <div className="rounded-2xl border border-rose-100 bg-white px-4 py-4">
                           <p className="text-sm font-semibold text-rose-900">
-                            You are the imposter 😈
+                            You are{" "}
+                            {round.imposterIds.length === 1
+                              ? "the imposter"
+                              : `one of ${round.imposterIds.length} imposters`}{" "}
+                            😈
                           </p>
                           <p className="mt-1 text-xs text-rose-500">
                             Category: {roundCategory?.name ?? "—"}
@@ -443,6 +472,10 @@ export default function RoundClient() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
+                    <span>Imposters</span>
+                    <span className="font-semibold">{imposterCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-2xl bg-rose-50/80 px-4 py-3">
                     <span>Selected categories</span>
                     <span className="font-semibold">
                       {selectedCategories.length} / {categories.length}
@@ -475,7 +508,7 @@ export default function RoundClient() {
                 <p className="font-semibold text-rose-800">Quick tips</p>
                 <ul className="mt-2 list-disc space-y-1 pl-4">
                   <li>Keep the word hidden until everyone peeks.</li>
-                  <li>Imposter only sees the category.</li>
+                  <li>Imposters only see the category.</li>
                   <li>After reveals, ask open questions.</li>
                 </ul>
               </div>

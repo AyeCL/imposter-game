@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Nepali Imposter Game",
-  description: "Light pink Nepali imposter game setup",
+  description: "Nepali red and blue imposter game setup",
   icons: {
     icon: "/nepali-imposter-logo.png",
     apple: "/nepali-imposter-logo.png",

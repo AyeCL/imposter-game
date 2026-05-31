@@ -16,11 +16,13 @@ export type Category = {
 export type SetupState = {
   players: Player[];
   categories: Category[];
+  imposterCount: number;
 };
 
 export const STORAGE_KEY = "imposter-game-setup-v1";
+export const DEFAULT_IMPOSTER_COUNT = 1;
 
-export const emojiPool = ["🦋", "🍓", "🌸", "🧁", "🍬", "🫧", "🍒", "🎀"];
+export const emojiPool = ["🏔️", "🥟", "☀️", "🌙", "🪷", "🪁", "🎭", "🔥"];
 
 export const starterPlayers: Player[] = [
   { id: "p1", name: "aayush", emoji: "🦋", active: true },
@@ -165,5 +167,40 @@ export const starterCategories: Category[] = [
     ],
   },
 ];
+
+export const getMaxImposterCount = (activePlayerCount: number) =>
+  Math.max(0, activePlayerCount - 1);
+
+export const normalizeImposterCount = (
+  value: unknown,
+  activePlayerCount: number
+) => {
+  const parsed = Math.floor(Number(value));
+  const requested = Number.isFinite(parsed) ? parsed : DEFAULT_IMPOSTER_COUNT;
+  const maxImposterCount = getMaxImposterCount(activePlayerCount);
+  if (maxImposterCount === 0) return 0;
+
+  return Math.min(Math.max(requested, DEFAULT_IMPOSTER_COUNT), maxImposterCount);
+};
+
+export const normalizeSetupState = (value: unknown): SetupState => {
+  const candidate = value as Partial<SetupState> | null | undefined;
+  const players = candidate?.players?.length
+    ? candidate.players
+    : starterPlayers;
+  const categories = candidate?.categories?.length
+    ? candidate.categories
+    : starterCategories;
+  const activePlayerCount = players.filter((player) => player.active).length;
+
+  return {
+    players,
+    categories,
+    imposterCount: normalizeImposterCount(
+      candidate?.imposterCount,
+      activePlayerCount
+    ),
+  };
+};
 
 export const makeId = () => `id-${Math.random().toString(36).slice(2, 9)}`;

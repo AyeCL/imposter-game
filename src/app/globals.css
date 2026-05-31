@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffeaf4;
-  --foreground: #4b1f36;
-  --surface: #fff7fb;
-  --surface-strong: #ffe0ee;
-  --accent: #ff7eb6;
-  --accent-strong: #ff4f9a;
-  --nepal-marigold: #f6b65f;
+  --background: #f3f7ff;
+  --foreground: #061436;
+  --surface: #ffffff;
+  --surface-strong: #e8efff;
+  --accent: #dc143c;
+  --accent-strong: #b80f32;
+  --nepal-marigold: #f9c74f;
   --nepal-teal: #2f8f86;
-  --nepal-blue: #3a66ad;
-  --nepal-red: #cc3558;
-  --nepal-ink: #3b2130;
+  --nepal-blue: #003893;
+  --nepal-red: #dc143c;
+  --nepal-ink: #061436;
   --font-display: "Kohinoor Devanagari", "Noto Serif Devanagari", "Mukta",
     "Avenir Next", "Avenir", "Trebuchet MS", "Verdana", "Segoe UI", serif;
   --font-body: "Mukta", "Noto Sans Devanagari", "Kohinoor Devanagari",
@@ -22,6 +22,17 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-rose-50: #eef4ff;
+  --color-rose-100: #dbe8ff;
+  --color-rose-200: #b9ccf5;
+  --color-rose-300: #7fa0e6;
+  --color-rose-400: #456fbd;
+  --color-rose-500: #dc143c;
+  --color-rose-600: #b80f32;
+  --color-rose-700: #003893;
+  --color-rose-800: #062d70;
+  --color-rose-900: #071f4d;
+  --color-rose-950: #061436;
   --font-sans: var(--font-body);
   --font-mono: var(--font-body);
 }
@@ -35,24 +46,24 @@ body {
 .nepal-sky {
   background-color: var(--background);
   background-image: radial-gradient(
-      circle at top,
-      rgba(255, 205, 227, 0.96),
-      rgba(255, 236, 246, 0.7) 42%,
-      rgba(255, 250, 252, 0.98) 75%
+      circle at 24% 8%,
+      rgba(220, 20, 60, 0.18),
+      transparent 32%
     ),
     linear-gradient(
       135deg,
-      rgba(246, 182, 95, 0.18),
-      rgba(47, 143, 134, 0.12)
+      rgba(0, 56, 147, 0.18),
+      rgba(255, 255, 255, 0.92) 40%,
+      rgba(220, 20, 60, 0.1)
     ),
     repeating-linear-gradient(
       135deg,
-      rgba(204, 53, 88, 0.05) 0 10px,
+      rgba(0, 56, 147, 0.055) 0 10px,
       transparent 10px 24px
     ),
     repeating-linear-gradient(
       45deg,
-      rgba(58, 102, 173, 0.05) 0 10px,
+      rgba(220, 20, 60, 0.055) 0 10px,
       transparent 10px 26px
     );
 }
@@ -60,25 +71,33 @@ body {
 .nepal-dhaka {
   background-image: repeating-linear-gradient(
       45deg,
-      rgba(255, 176, 210, 0.18) 0 6px,
+      rgba(220, 20, 60, 0.1) 0 6px,
       transparent 6px 16px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgba(246, 182, 95, 0.14) 0 6px,
+      rgba(0, 56, 147, 0.1) 0 6px,
       transparent 6px 16px
     );
   background-size: 26px 26px;
 }
 
 .nepal-prayer-flags {
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAxODAgMjQiPjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiLz48cG9seWdvbiBwb2ludHM9IjAsMCAyMCwwIDEwLDE4IiBmaWxsPSIjZjU5ZmMyIi8+PHBvbHlnb24gcG9pbnRzPSIyMCwwIDQwLDAgMzAsMTgiIGZpbGw9IiNmNmMwNmEiLz48cG9seWdvbiBwb2ludHM9IjQwLDAgNjAsMCA1MCwxOCIgZmlsbD0iIzNmYTU5YiIvPjxwb2x5Z29uIHBvaW50cz0iNjAsMCA4MCwwIDcwLDE4IiBmaWxsPSIjZTc3YWE5Ii8+PHBvbHlnb24gcG9pbnRzPSI4MCwwIDEwMCwwIDkwLDE4IiBmaWxsPSIjM2E2NmFkIi8+PHBvbHlnb24gcG9pbnRzPSIxMDAsMCAxMjAsMCAxMTAsMTgiIGZpbGw9IiNmNTlmYzIiLz48cG9seWdvbiBwb2ludHM9IjEyMCwwIDE0MCwwIDEzMCwxOCIgZmlsbD0iI2Y2YzA2YSIvPjxwb2x5Z29uIHBvaW50cz0iMTQwLDAgMTYwLDAgMTUwLDE4IiBmaWxsPSIjM2ZhNTliIi8+PHBvbHlnb24gcG9pbnRzPSIxNjAsMCAxODAsMCAxNzAsMTgiIGZpbGw9IiNlNzdhYTkiLz48bGluZSB4MT0iMCIgeTE9IjEiIHgyPSIxODAiIHkyPSIxIiBzdHJva2U9IiNmMGIyY2YiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==");
+  background-image: repeating-linear-gradient(
+    90deg,
+    #dc143c 0 20px,
+    #ffffff 20px 22px,
+    #003893 22px 42px,
+    #ffffff 42px 44px,
+    #f9c74f 44px 64px,
+    #ffffff 64px 66px
+  );
   background-repeat: repeat-x;
-  background-size: 180px 24px;
+  background-size: 198px 24px;
 }
 
 .nepal-hills {
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDEyMDAgMTYwIj48cGF0aCBkPSJNMCAxMjAgTDEyMCA3MCBMMjIwIDExMCBMMzQwIDYwIEw0NjAgMTIwIEw2MDAgNTAgTDc0MCAxMjAgTDg2MCA4MCBMMTAwMCAxMzAgTDExMjAgOTAgTDEyMDAgMTIwIEwxMjAwIDE2MCBMMCAxNjAgWiIgZmlsbD0iI2Y2YzZkZCIvPjxwYXRoIGQ9Ik0wIDE0MCBMMTQwIDkwIEwyODAgMTMwIEw0MjAgODAgTDU2MCAxNDAgTDcwMCA3MCBMODQwIDEyMCBMOTgwIDEwMCBMMTIwMCAxNDAgTDEyMDAgMTYwIEwwIDE2MCBaIiBmaWxsPSIjZjFiM2NmIi8+PC9zdmc+");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='160' viewBox='0 0 1200 160'%3E%3Cpath d='M0 120 L120 70 L220 110 L340 60 L460 120 L600 50 L740 120 L860 80 L1000 130 L1120 90 L1200 120 L1200 160 L0 160 Z' fill='%23003893' fill-opacity='.14'/%3E%3Cpath d='M0 140 L140 90 L280 130 L420 80 L560 140 L700 70 L840 120 L980 100 L1200 140 L1200 160 L0 160 Z' fill='%23dc143c' fill-opacity='.12'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;
