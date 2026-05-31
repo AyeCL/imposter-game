@@ -254,14 +254,14 @@ export default function SetupPage() {
         <div className="pointer-events-none absolute left-0 top-0 h-7 w-full opacity-70 nepal-prayer-flags" />
         <div className="pointer-events-none absolute bottom-0 left-0 h-32 w-full opacity-70 nepal-hills" />
 
-        <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 lg:px-10">
-          <header className="flex flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-8 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka">
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-wrap items-center gap-3">
+        <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+          <header className="flex w-full flex-col gap-6 rounded-3xl border border-white/60 bg-white/80 p-5 shadow-[0_20px_60px_rgba(250,143,190,0.2)] backdrop-blur nepal-dhaka sm:p-8">
+            <div className="grid w-full min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] xl:items-start">
+              <div className="flex min-w-0 flex-col gap-3">
+                <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                   <Link
                     href="/"
-                    className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-rose-500"
+                    className="inline-flex max-w-full items-center gap-2 break-words text-xs font-semibold uppercase tracking-[0.24em] text-rose-500 sm:tracking-[0.3em]"
                   >
                     <FiHeart /> {copy.appName}
                   </Link>
@@ -271,14 +271,14 @@ export default function SetupPage() {
                     onChange={updateLanguage}
                   />
                 </div>
-                <h1 className="font-[var(--font-display)] text-4xl font-semibold text-rose-950 sm:text-5xl">
+                <h1 className="font-[var(--font-display)] text-3xl font-semibold text-rose-950 sm:text-5xl">
                   {copy.setup.title}
                 </h1>
                 <p className="max-w-2xl text-base text-rose-700 sm:text-lg">
                   {copy.setup.intro}
                 </p>
               </div>
-              <div className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700 nepal-dhaka">
+              <div className="flex w-full min-w-0 flex-col gap-3 rounded-2xl border border-rose-100 bg-white/90 p-4 text-sm text-rose-700 nepal-dhaka">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 font-semibold">
                     <FiUsers /> {copy.common.players}
